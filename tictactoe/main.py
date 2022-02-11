@@ -1,4 +1,4 @@
 from tictactoe import *
 
 game = TicTacToe()
-game.play_game()
+game.play_npc_game()

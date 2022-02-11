@@ -7,7 +7,6 @@ class TicTacToe:
         for x in range(2):
             self.board = [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]
 
-
     def print_instructions(self):
         # TODO: Print the instructions to the game
         print("Welcome to TicTacToe!")
@@ -95,13 +94,58 @@ class TicTacToe:
                     return False
         return True
 
+    def print_npc_instructions(self):
+        # TODO: Print the instructions to the game
+        print("Welcome to TicTacToe!")
+        print("You are player X and the NPC is player O")
+        print("Take turns placing your pieces - the first to 3 in a row wins!")
+        return None
+
+    def take_random_turn(self):
+        row = random.randint(0, 3)
+        col = random.randint(0, 3)
+
+        while not self.npc_is_valid_turn(row, col):
+            row = random.randint(0, 3)
+            col = random.randint(0, 3)
+
+        self.place_player('O', row, col)
+
+    def npc_is_valid_turn(self, row, col):
+        if row < 0 or row > 2 or col < 0 or col > 2:
+            return False
+        elif self.board[row][col] != "-":
+            return False
+        else:
+            return True
+
+    def play_npc_game(self):
+        # TODO: Play game
+
+        self.print_npc_instructions()
+        self.print_board()
+        while not (self.check_win("X") or self.check_win("O") or self.check_tie()):
+            self.take_turn("X")
+            self.print_board()
+            if self.check_win("X"):
+                print("Player 1 wins")
+            elif self.check_tie():
+                print("Tie")
+            else:
+                self.take_random_turn()
+                self.print_board()
+                if self.check_win("O"):
+                    print("Player 2 wins")
+                elif self.check_tie():
+                    print("Tie")
+        return
+
     def play_game(self):
         # TODO: Play game
 
         self.print_instructions()
         self.print_board()
         while not (self.check_win("X") or self.check_win("O") or self.check_tie()):
-            print("hello")
             self.take_turn("X")
             self.print_board()
             if self.check_win("X"):
