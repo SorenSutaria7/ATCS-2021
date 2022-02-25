@@ -1,5 +1,5 @@
 import random
-
+import time
 
 class TicTacToe:
     def __init__(self):
@@ -66,7 +66,7 @@ class TicTacToe:
         if player == 'X':
             self.take_manual_turn(player)
         if player == 'O':
-            depth = 3
+            depth = 10
             self.take_minimax_turn(player, depth)
         return
 
@@ -221,8 +221,6 @@ class TicTacToe:
         # Player O's Turn finding best possible turn
         if (player == "O"):
             best = -10
-            row = opt_row
-            col = opt_col
             for i in range(len(self.board)):
                 for j in range(len(self.board[i])):
                     if self.board[i][j] == '-':
@@ -233,13 +231,11 @@ class TicTacToe:
                             best = num
                             opt_row = int(i)
                             opt_col = int(j)
-            return (best, row, col)
+            return (best, opt_row, opt_col)
 
         # Player X's Turn finding best possible turn
         if (player == "X"):
             worst = 10
-            row = opt_row
-            col = opt_col
             for i in range(len(self.board)):
                 for j in range(len(self.board[i])):
                     if self.board[i][j] == "-":
@@ -250,13 +246,65 @@ class TicTacToe:
                             worst = num
                             opt_row = int(i)
                             opt_col = int(j)
-            return (worst, row, col)
+            return (worst, opt_row, opt_col)
 
-#calls the current mini max function
+ # mini max with alpha beta in it
+    def mini_max_alpha_beta(self, player, depth, alpha, beta):
+            opt_row = -1
+            opt_col = -1
+            # base cases with depth case
+            if depth == 0:
+                return 0, None, None
+            if (self.check_win("O")):
+                return (-10, None, None)
+            if (self.check_win("X")):
+                return (10, None, None)
+            if (self.check_tie()):
+                return (0, None, None)
+
+            # Player O's Turn finding best possible turn
+            if (player == "O"):
+                best = -10
+                for i in range(len(self.board)):
+                    for j in range(len(self.board[i])):
+                        if self.board[i][j] == '-':
+                            self.place_player('O', int(i), int(j))
+                            num = self.mini_max_alpha_beta('X', depth - 1, alpha, beta)[0]
+                            self.place_player('-', int(i), int(j))
+                            if num > best:
+                                best = num
+                                opt_row = int(i)
+                                opt_col = int(j)
+                            alpha = max(alpha, best)
+                            if alpha >= beta:
+                                break
+                return (best, opt_row, opt_col)
+
+            # Player X's Turn finding best possible turn
+            if (player == "X"):
+                worst = 10
+                for i in range(len(self.board)):
+                    for j in range(len(self.board[i])):
+                        if self.board[i][j] == "-":
+                            self.place_player('X', int(i), int(j))
+                            num = self.mini_max_alpha_beta('O', depth - 1, alpha, beta)[0]
+                            self.place_player('-', int(i), int(j))
+                            if num < worst:
+                                worst = num
+                                opt_row = int(i)
+                                opt_col = int(j)
+                            beat = min(beta, worst)
+                            if beta <= alpha:
+                                break
+                return (worst, opt_row, opt_col)
+
+    #calls the current mini max function
     def take_minimax_turn(self, player, depth):
-        row = self.mini_max_depth(player, depth)[1]
-        col = self.mini_max_depth(player, depth)[2]
-        self.place_player(player, int(row), int(col))
+        start = time.time()
+        score, row, col = self.mini_max_alpha_beta(player, depth, -100, 100)
+        end = time.time()
+        print("This turn took:", end - start, "seconds")
+        self.place_player(player, row, col)
 
 #playing the actual game until game over
     def play_game(self):
@@ -279,6 +327,5 @@ class TicTacToe:
                 elif self.check_tie():
                     print("Tie")
         return
-
 
 
